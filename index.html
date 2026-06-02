@@ -674,10 +674,10 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
       <div class="supply-prop-table">
         <div class="prop-row"><span class="prop-key">Token Name</span><span class="prop-val">Mosquito Token</span></div>
         <div class="prop-row"><span class="prop-key">Ticker</span><span class="prop-val green">$BITE</span></div>
-        <div class="prop-row"><span class="prop-key">Network</span><span class="prop-val">TON</span></div>
-        <div class="prop-row"><span class="prop-key">Standard</span><span class="prop-val">Jetton</span></div>
+        <div class="prop-row"><span class="prop-key">Network</span><span class="prop-val">BNB Chain</span></div>
+        <div class="prop-row"><span class="prop-key">Standard</span><span class="prop-val">BEP-20</span></div>
         <div class="prop-row"><span class="prop-key">Total Supply</span><span class="prop-val">36,900,000,000,000</span></div>
-        <div class="prop-row"><span class="prop-key">TGE Date</span><span class="prop-val amber">August 20, 2025</span></div>
+        <div class="prop-row"><span class="prop-key">TGE Date</span><span class="prop-val amber">August 20, 2026</span></div>
         <div class="prop-row"><span class="prop-key">Snapshot</span><span class="prop-val red">Aug 10 · 23:59 UTC</span></div>
         <div class="prop-row"><span class="prop-key">Decimals</span><span class="prop-val">9</span></div>
         <div class="prop-row"><span class="prop-key">Burn / TX</span><span class="prop-val amber">0.01% — sacred deflation</span></div>
@@ -760,24 +760,24 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
     <div class="timeline-pins reveal">
       <div class="pin-card live">
         <div class="pin-type">Phase Opens</div>
-        <div class="pin-date">June 1, 2025</div>
+        <div class="pin-date">June 1, 2026</div>
         <div class="pin-desc">Season 1 begins. Game goes live. Start earning Nectar.</div>
         <div class="pin-badge" style="color:#00cc55;">▶ LIVE NOW</div>
       </div>
       <div class="pin-card">
         <div class="pin-type">Early Hunter</div>
-        <div class="pin-date">July 1, 2025</div>
+        <div class="pin-date">July 1, 2026</div>
         <div class="pin-desc">Join before this date for ×1.25 multiplier on full BITE Score.</div>
         <div class="pin-badge" style="color:var(--accent3);">×1.25 BONUS</div>
       </div>
       <div class="pin-card">
         <div class="pin-type">Mid-Season</div>
-        <div class="pin-date">July 20, 2025</div>
+        <div class="pin-date">July 20, 2026</div>
         <div class="pin-desc">Public leaderboard. Top 100 hunters revealed.</div>
       </div>
       <div class="pin-card warn">
         <div class="pin-type">Late Penalty</div>
-        <div class="pin-date">Aug 1, 2025</div>
+        <div class="pin-date">Aug 1, 2026</div>
         <div class="pin-desc">Accounts after this date earn 0.5× BITE Score.</div>
         <div class="pin-badge" style="color:var(--accent2);">0.5× PENALTY</div>
       </div>
@@ -794,7 +794,7 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
       </div>
       <div class="pin-card tge">
         <div class="pin-type">WORLD MOSQUITO DAY</div>
-        <div class="pin-date">Aug 20, 2025</div>
+        <div class="pin-date">Aug 20, 2026</div>
         <div class="pin-desc">$BITE TGE. DEX listing. Claim opens. Season 2 announced.</div>
         <div class="pin-badge" style="color:#cc9900;">★ TGE DAY</div>
       </div>
@@ -880,52 +880,11 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
 
 <div class="div-torn"></div>
 
-<!-- ═══ CALCULATOR ═══ -->
-<section id="calculator">
-  <div class="wrap">
-    <div class="sec-header reveal">
-      <div class="sec-num">05</div>
-      <div>
-        <div class="sec-tag">BITE Score Calculator</div>
-        <div class="sec-title">Estimate <em>Your Drop</em></div>
-        <div class="sec-note">assumes 500,000 total participating players</div>
-      </div>
-    </div>
-    <div class="calc-panel reveal">
-      <div class="calc-inputs">
-        <div class="calc-fields">
-          <div class="cf"><label>Nectar Earned</label><input type="number" id="cNectar" value="2500" min="0"/></div>
-          <div class="cf"><label>Total Kills</label><input type="number" id="cKills" value="180" min="0"/></div>
-          <div class="cf"><label>Active Referrals</label><input type="number" id="cRefs" value="2" min="0" max="50"/></div>
-          <div class="cf"><label>Hunter Level</label><input type="number" id="cLevel" value="8" min="1" max="50"/></div>
-        </div>
-        <div class="calc-checks" id="calcChecks"></div>
-        <button class="calc-run" onclick="calcBite()">Run Calculation →</button>
-      </div>
-      <div class="calc-readout">
-        <div class="readout-label">BITE Score</div>
-        <div class="readout-score" id="calcScore">—</div>
-        <div class="readout-label" style="margin-top:18px;">Projected $BITE Airdrop</div>
-        <div class="readout-bite" id="calcBiteVal">—</div>
-        <div class="readout-usd" id="calcUsdRow">
-          <div class="rusd-item"><div class="rusd-val" id="cu1">—</div><div class="rusd-label">at $0.0001</div></div>
-          <div class="rusd-item"><div class="rusd-val" id="cu2">—</div><div class="rusd-label">at $0.001</div></div>
-          <div class="rusd-item"><div class="rusd-val" id="cu3">—</div><div class="rusd-label">at $0.01</div></div>
-        </div>
-        <div class="readout-note">Estimates assume 500,000 total players. Your actual share depends on total BITE Score pool at snapshot.</div>
-        <div class="annotation annotation-red" style="margin-top:12px;font-size:13px;">← not financial advice!</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="div-torn"></div>
-
 <!-- ═══ BURN ═══ -->
 <section id="burn">
   <div class="wrap">
     <div class="sec-header reveal">
-      <div class="sec-num">06</div>
+      <div class="sec-num">05</div>
       <div>
         <div class="sec-tag">Deflationary Mechanics</div>
         <div class="sec-title">The <em>Burn</em></div>
@@ -955,21 +914,21 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
       <div>
         <div class="footer-mark">$BITE</div>
         <div class="footer-disc">
-          $BITE is a utility and community token with a sacred deflation mechanism: 0.01% burns forever, 1% funds real-world healing, 98.99% flows to the community. It does not represent equity, debt, or ownership in any legal entity. This document is a living litepaper — version 1.0, June 2025.
+          MOSQUITO is a utility and impact-driven token with a sacred deflation mechanism: 0.01% burns forever, 1% funds real-world healing, 98.99% flows to the community. It does not represent equity, debt, or ownership in any legal entity. This document is a living litepaper — version 1.0, June 2026.
         </div>
         <div style="font-size:9px;color:var(--ink3);margin-top:8px;font-family:'DM Mono',monospace;letter-spacing:.08em;">
-          Greenman Ecosystem · BMU Holdings · SUMBIT · Mother Earth, Founder
+          Greenman Ecosystem · Building a sustainable future,one token at a time.
         </div>
         <div class="footer-links">
-          <a class="flink" href="https://t.me/GreenmanEcoDAO">Telegram</a>
-          <a class="flink" href="https://x.com/SwampCoin_">Twitter / X</a>
-          <a class="flink" href="#">GitHub</a>
-          <a class="flink" href="#">▶ Play Game</a>
+          <a class="flink" href="https://t.me/MosquitoBITE_official">Telegram</a>
+          <a class="flink" href="https://x.com/_BITEGlobal">Twitter / X</a>
+          <a class="flink" href="https://github.com/BITEGlobal">GitHub</a>
+          <a class="flink" href="https://t.me/stingwarsbot">▶ Play Game</a>
         </div>
       </div>
       <div class="footer-right">
-        <div class="footer-stamp">World Mosquito Day<br>August 20, 2025<br>TGE ⚑</div>
-        <div style="margin-top:20px;font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:.12em;">V1.0 · JUNE 2025 · TON NETWORK</div>
+        <div class="footer-stamp">World Mosquito Day<br>August 20, 2026<br>TGE ⚑</div>
+        <div style="margin-top:20px;font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:.12em;">V1.0 · JUNE 2026 · BNB CHAIN</div>
       </div>
     </div>
   </div>
@@ -979,11 +938,11 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
 /* ─── DATA DEFINITIONS FIRST (fix for allocColorsDark ReferenceError) ─── */
 const allocData=[
   {name:'Sting Wars Airdrop',    pct:15, color:'#2a9a5c'},
-  {name:'Ecosystem & Rewards',   pct:22, color:'#4abf7a'},
+  {name:'Ecosystem & Rewards',   pct:35, color:'#4abf7a'},
   {name:'DEX Liquidity',         pct:20, color:'#2a7abf'},
-  {name:'Dev & Team',            pct:12, color:'#8a44bf'},
-  {name:'Community Treasury',    pct:13, color:'#bf9a20'},
-  {name:'Strategic Partners',    pct:8,  color:'#bf5a20'},
+  {name:'Dev & Team',            pct:5, color:'#8a44bf'},
+  {name:'Community Treasury',    pct:10, color:'#bf9a20'},
+  {name:'Strategic Partners',    pct:5,  color:'#bf5a20'},
   {name:'Burn Reserve',          pct:5,  color:'#bf2040'},
   {name:'Marketing & Growth',    pct:5,  color:'#bf50a0'},
 ];
@@ -1131,64 +1090,6 @@ multData.forEach(m=>{
   el.innerHTML=`<div class="mult-icon">${m.icon}</div><div><div class="mult-label">${m.label}</div><div class="mult-cond">${m.cond}</div><div class="mult-effect">${m.effect}</div></div>`;
   multGrid.appendChild(el);
 });
-
-/* ─── CALCULATOR CHECKS ─── */
-const calcChecks=document.getElementById('calcChecks');
-checkDefs.forEach((c,i)=>{
-  const el=document.createElement('label');
-  el.className='cc';
-  el.innerHTML=`<input type="checkbox" id="${c.id}"/><span style="color:var(--ink3);margin-right:2px;">${multData[i]?multData[i].icon:''}</span><span>${c.label}</span>`;
-  calcChecks.appendChild(el);
-});
-
-/* ─── CALCULATOR LOGIC ─── */
-function getLvBonus(l){
-  if(l>=40)return l*5000;if(l>=30)return l*3000;
-  if(l>=20)return l*2000;if(l>=10)return l*1500;
-  if(l>=5)return l*1200;return l*1000;
-}
-function fmtK(n){
-  if(n>=1e9)return(n/1e9).toFixed(2)+'B';
-  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
-  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
-  return Math.round(n).toString();
-}
-function calcBite(){
-  const nectar=+document.getElementById('cNectar').value||0;
-  const kills=+document.getElementById('cKills').value||0;
-  const refs=Math.min(50,+document.getElementById('cRefs').value||0);
-  const level=Math.min(50,Math.max(1,+document.getElementById('cLevel').value||1));
-  const early=document.getElementById('cEarly')?.checked;
-  const squad=document.getElementById('cSquad')?.checked;
-  const boss=document.getElementById('cBoss')?.checked;
-  const accuracy=document.getElementById('cAccuracy')?.checked;
-  const devote=document.getElementById('cDevote')?.checked;
-  let nComp=nectar*.6;if(devote)nComp*=1.15;
-  const kComp=kills*2;
-  const rComp=(refs*500)*.25;
-  let lv=getLvBonus(level);if(level>=40)lv*=2;
-  const lvComp=lv*.15;
-  let score=nComp+kComp+rComp+lvComp;
-  if(early)score*=1.25;
-  if(squad)score+=100000;
-  if(boss)score+=50000;
-  if(accuracy)score+=25000;
-  const pool=500000*3550;
-  const airdrop=5535000000000; // 15% of 36.9T
-  const myBite=Math.round((score/pool)*airdrop);
-  document.getElementById('calcScore').textContent=Math.round(score).toLocaleString();
-  document.getElementById('calcBiteVal').textContent=fmtK(myBite)+' $BITE';
-  document.getElementById('cu1').textContent='$'+(myBite*.0001).toFixed(2);
-  document.getElementById('cu2').textContent='$'+(myBite*.001).toFixed(2);
-  document.getElementById('cu3').textContent='$'+(myBite*.01).toFixed(2);
-}
-['cNectar','cKills','cRefs','cLevel'].forEach(id=>{
-  document.getElementById(id)?.addEventListener('input',calcBite);
-});
-document.addEventListener('change',e=>{
-  if(['cEarly','cSquad','cBoss','cAccuracy','cDevote'].includes(e.target.id))calcBite();
-});
-calcBite();
 
 /* ─── BURN TABLE ─── */
 const burnBody=document.getElementById('burnBody');
