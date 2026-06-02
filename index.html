@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>$BITE — Specimen Lab Dissection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Special+Elite&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --paper:#f5f0e8;--paper2:#ede7d9;--paper3:#e0d8c8;
+  --ink:#1a1208;--ink2:#2d2010;--ink3:#4a3820;
+  --ink-faint:rgba(26,18,8,0.12);--ink-mid:rgba(26,18,8,0.35);
+  --accent:#1a4a2e;--accent2:#b84a1c;--accent3:#1a3a6e;--accent4:#7a1a3c;
+  --grid:rgba(26,18,8,0.06);--rule:rgba(26,18,8,0.1);
+  --glow-tint:rgba(26,74,46,0.08);--shadow:rgba(26,18,8,0.15);
+}
+[data-theme="dark"] {
+  --paper:#0d0f18;--paper2:#131624;--paper3:#181c2e;
+  --ink:#e8e0d0;--ink2:#c8bfaa;--ink3:#a09080;
+  --ink-faint:rgba(232,224,208,0.08);--ink-mid:rgba(232,224,208,0.25);
+  --accent:#4aff99;--accent2:#ff7a3c;--accent3:#5aabff;--accent4:#d060aa;
+  --grid:rgba(232,224,208,0.04);--rule:rgba(232,224,208,0.08);
+  --glow-tint:rgba(74,255,153,0.05);--shadow:rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;background:var(--paper);}
+body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;font-weight:300;overflow-x:hidden;cursor:none;transition:background .5s ease,color .5s ease;}
+
+/* CURSOR */
+#cursor-h,#cursor-v{position:fixed;pointer-events:none;z-index:9999;background:var(--accent);transition:background .3s;}
+#cursor-h{width:28px;height:1px;transform:translate(-50%,-50%);}
+#cursor-v{width:1px;height:28px;transform:translate(-50%,-50%);}
+#cursor-dot{position:fixed;width:5px;height:5px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:10000;transform:translate(-50%,-50%);}
+#cursor-ring{position:fixed;width:44px;height:44px;border-radius:50%;border:1px solid var(--accent);pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:left .1s ease,top .1s ease,width .2s,height .2s,border-color .3s;opacity:.4;}
+
+/* GRID BG */
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:repeating-linear-gradient(0deg,var(--grid) 0px,var(--grid) 1px,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,var(--grid) 0px,var(--grid) 1px,transparent 1px,transparent 28px);pointer-events:none;}
+body::after{content:'';position:fixed;inset:0;z-index:0;background-image:repeating-linear-gradient(0deg,transparent 0px,transparent 27px,var(--rule) 27px,var(--rule) 28px);pointer-events:none;opacity:.4;}
+
+/* THEME TOGGLE */
+#theme-toggle{position:fixed;top:18px;right:24px;z-index:500;background:none;border:1px solid var(--ink-mid);border-radius:2px;cursor:none;padding:6px 12px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);transition:all .3s;display:flex;align-items:center;gap:8px;}
+#theme-toggle:hover{background:var(--glow-tint);border-color:var(--accent);}
+.toggle-icon{width:16px;height:16px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;display:flex;align-items:center;background:var(--paper2);border-bottom:2px solid var(--ink-mid);transition:background .5s;}
+.ruler-marks{position:absolute;bottom:0;left:0;right:0;height:8px;overflow:hidden;}
+.ruler-marks::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(90deg,transparent 0px,transparent 9px,var(--ink-mid) 9px,var(--ink-mid) 10px);}
+.nav-logo{padding:0 24px;font-family:'Special Elite',serif;font-size:20px;color:var(--accent);letter-spacing:.04em;white-space:nowrap;display:flex;align-items:center;gap:10px;}
+.nav-logo-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--ink3);text-transform:uppercase;margin-top:2px;}
+.nav-sep{width:1px;height:26px;background:var(--ink-mid);flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:0;padding:0 16px;overflow:hidden;}
+.nl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);text-decoration:none;padding:8px 14px;white-space:nowrap;transition:color .2s;border-right:1px solid var(--ink-faint);}
+.nl:hover{color:var(--accent);}
+.nav-status{margin-left:auto;padding-right:120px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.status-blink{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.4s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* SECTIONS */
+.wrap{max-width:1140px;margin:0 auto;padding:0 40px;position:relative;z-index:2;}
+section{padding:80px 0;position:relative;z-index:2;}
+
+/* ANNOTATION */
+.annotation{font-family:'Caveat',cursive;font-weight:400;color:var(--accent3);}
+.annotation-red{color:var(--accent2);}
+.annotation-green{color:var(--accent);}
+
+/* ═══ HERO — GAME FOCUSED ═══ */
+.hero{min-height:100vh;padding-top:52px;display:grid;grid-template-columns:1fr 1fr;position:relative;z-index:2;overflow:hidden;}
+.hero-left{padding:60px 40px 60px 60px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--ink-mid);position:relative;}
+.hero-right{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow:hidden;}
+
+/* Game screen mockup */
+.game-screen{
+  position:relative;width:380px;height:460px;
+  background:linear-gradient(160deg,#0a1a0e 0%,#0d1f12 60%,#081510 100%);
+  border:2px solid var(--accent);
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow:0 0 60px rgba(74,255,153,0.12),0 0 120px rgba(74,255,153,0.05),inset 0 0 40px rgba(0,0,0,0.5);
+}
+[data-theme="light"] .game-screen{background:linear-gradient(160deg,#1a3a20 0%,#0f2a14 60%,#0a1e0a 100%);border-color:var(--accent);}
+.game-screen-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;border-bottom:1px solid rgba(74,255,153,0.2);
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;
+  color:rgba(74,255,153,0.6);text-transform:uppercase;
+}
+[data-theme="light"] .game-screen-header{color:rgba(26,74,46,0.7);border-bottom-color:rgba(26,74,46,0.2);}
+.game-screen-body{position:relative;height:calc(100% - 34px);overflow:hidden;}
+.game-hud{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;z-index:10;
+}
+.hud-stat{font-family:'Special Elite',serif;font-size:11px;color:rgba(74,255,153,0.8);}
+[data-theme="light"] .hud-stat{color:rgba(74,255,153,0.9);}
+.hud-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;color:rgba(74,255,153,0.4);margin-top:1px;}
+.health-bar{width:80px;height:4px;background:rgba(74,255,153,0.1);border-radius:2px;overflow:hidden;}
+.health-fill{height:100%;background:var(--accent);width:72%;border-radius:2px;animation:healthpulse 2s ease-in-out infinite;}
+@keyframes healthpulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+/* Mosquito targets on game screen */
+.mosq-target{position:absolute;cursor:none;animation:float 3s ease-in-out infinite;}
+.mosq-target:nth-child(2){animation-delay:.8s;}
+.mosq-target:nth-child(3){animation-delay:1.6s;}
+@keyframes float{0%,100%{transform:translate(0,0) rotate(0deg);}33%{transform:translate(4px,-6px) rotate(5deg);}66%{transform:translate(-3px,3px) rotate(-3deg);}};
+.crosshair-overlay{position:absolute;pointer-events:none;animation:scanMove 4s linear infinite;}
+@keyframes scanMove{0%{transform:translate(60px,80px);}25%{transform:translate(200px,120px);}50%{transform:translate(140px,200px);}75%{transform:translate(80px,160px);}100%{transform:translate(60px,80px);}};
+.hit-splash{position:absolute;border-radius:50%;animation:splashOut 1.5s ease-out infinite;opacity:0;}
+.hit-splash:nth-child(1){width:20px;height:20px;background:rgba(74,255,153,0.3);top:35%;left:55%;animation-delay:0s;}
+.hit-splash:nth-child(2){width:14px;height:14px;background:rgba(255,122,60,0.4);top:55%;left:30%;animation-delay:.7s;}
+.hit-splash:nth-child(3){width:16px;height:16px;background:rgba(74,255,153,0.25);top:25%;left:70%;animation-delay:1.3s;}
+@keyframes splashOut{0%{transform:scale(0);opacity:.8;}100%{transform:scale(3);opacity:0;}}
+.game-score-flash{position:absolute;font-family:'Special Elite',serif;font-size:13px;color:var(--accent);animation:scoreFloat 2s ease-out infinite;pointer-events:none;}
+.game-score-flash:nth-child(1){top:40%;left:52%;animation-delay:0s;}
+.game-score-flash:nth-child(2){top:30%;left:25%;color:var(--accent2);animation-delay:.9s;}
+@keyframes scoreFloat{0%{opacity:0;transform:translateY(0);}20%{opacity:1;}100%{opacity:0;transform:translateY(-30px);}}
+/* Scanline effect */
+.game-screen::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.08) 3px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:20;}
+
+/* Tape decorations */
+.tape{position:absolute;width:48px;height:16px;background:rgba(180,160,80,0.25);border:1px solid rgba(180,160,80,0.35);transform:rotate(-4deg);}
+.tape-tl{top:20px;left:-8px;transform:rotate(-8deg);}
+.tape-tr{top:20px;right:-8px;transform:rotate(8deg);}
+
+.hero-specimen-num{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;}
+.hero-eyebrow{font-family:'Caveat',cursive;font-size:18px;color:var(--accent2);margin-bottom:8px;letter-spacing:.02em;}
+.hero-title{font-family:'Special Elite',serif;font-size:clamp(52px,7.5vw,100px);line-height:.9;letter-spacing:-.02em;color:var(--ink);}
+.hero-title .dollar{color:var(--accent);}
+.hero-subtitle{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(15px,1.8vw,20px);color:var(--ink3);margin-top:12px;letter-spacing:.03em;}
+.hero-desc{font-size:11px;color:var(--ink3);line-height:1.9;margin-top:18px;max-width:420px;letter-spacing:.04em;}
+
+/* Game mechanic tags */
+.mechanic-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+.m-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--rule);color:var(--ink3);transition:all .2s;}
+.m-tag.hot{border-color:var(--accent);color:var(--accent);}
+.m-tag.fire{border-color:var(--accent2);color:var(--accent2);}
+
+.hero-cta-row{display:flex;align-items:center;gap:16px;margin-top:28px;}
+.btn-hunt{
+  font-family:'Special Elite',serif;font-size:16px;
+  letter-spacing:.06em;color:var(--paper);
+  background:var(--accent);border:none;padding:14px 32px;cursor:none;
+  transition:all .25s;position:relative;overflow:hidden;
+  box-shadow:0 0 24px rgba(74,255,153,0.3);
+}
+[data-theme="light"] .btn-hunt{color:#0a1a0e;}
+.btn-hunt::before{content:'';position:absolute;inset:0;background:white;opacity:0;transition:opacity .2s;}
+.btn-hunt:hover::before{opacity:.1;}
+.btn-hunt:hover{box-shadow:0 0 40px rgba(74,255,153,0.5);transform:translateY(-1px);}
+.btn-outline{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:none;border:1px solid var(--ink-mid);padding:12px 24px;cursor:none;transition:all .2s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+.hero-stats{display:flex;gap:0;margin-top:36px;border-top:1px solid var(--ink-mid);border-bottom:1px solid var(--rule);padding:16px 0;}
+.hstat{flex:1;text-align:center;border-right:1px solid var(--rule);padding:4px 8px;}
+.hstat:last-child{border-right:none;}
+.hstat-val{font-family:'Special Elite',serif;font-size:28px;color:var(--accent);line-height:1;}
+.hstat-key{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-top:3px;}
+
+/* SECTION HEADERS */
+.sec-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:48px;padding-bottom:16px;border-bottom:2px solid var(--ink);position:relative;}
+.sec-num{font-family:'Caveat',cursive;font-size:52px;font-weight:700;line-height:1;color:var(--ink-faint);user-select:none;min-width:56px;}
+[data-theme="dark"] .sec-num{color:rgba(232,224,208,0.12);}
+.sec-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.sec-title{font-family:'Special Elite',serif;font-size:clamp(32px,4.5vw,56px);line-height:1;color:var(--ink);letter-spacing:-.01em;}
+.sec-title em{font-family:'Playfair Display',serif;font-style:italic;color:var(--accent);}
+.sec-note{font-family:'Caveat',cursive;font-size:14px;color:var(--ink3);margin-top:6px;letter-spacing:.02em;}
+.sec-header::after{content:'';position:absolute;bottom:-2px;left:0;width:80px;height:3px;background:var(--accent2);}
+
+.div-torn{position:relative;height:24px;z-index:2;overflow:hidden;margin:0;}
+.div-torn::before{content:'';position:absolute;left:0;right:0;top:12px;height:1px;background:var(--ink-mid);}
+
+/* ═══ TRANSACTION FLOW SECTION ═══ */
+.tx-flow-wrap{
+  border:2px solid var(--ink);
+  padding:48px;
+  position:relative;
+  background:var(--paper2);
+}
+.tx-flow-wrap::before{
+  content:'EVERY TRANSACTION · SACRED FREQUENCY PROTOCOL';
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--paper2);font-family:'DM Mono',monospace;font-size:8px;
+  letter-spacing:.18em;color:var(--accent);padding:0 16px;white-space:nowrap;
+}
+.tx-river{
+  display:grid;grid-template-columns:1fr 32px 1fr 32px 1fr;
+  align-items:center;gap:0;margin:32px 0 48px;
+}
+.tx-block{
+  border:1px solid var(--rule);padding:28px 20px;
+  position:relative;text-align:center;transition:border-color .2s,background .2s;
+}
+.tx-block:hover{border-color:var(--ink-mid);background:var(--glow-tint);}
+.tx-pct{font-family:'Special Elite',serif;font-size:clamp(44px,6vw,72px);line-height:1;letter-spacing:-.02em;}
+.tx-pct.burn{color:var(--accent2);}
+.tx-pct.charity{color:var(--accent3);}
+.tx-pct.flow{color:var(--accent);}
+.tx-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-top:6px;color:var(--ink3);}
+.tx-desc{font-size:9px;color:var(--ink3);line-height:1.8;margin-top:12px;letter-spacing:.03em;max-width:180px;margin-left:auto;margin-right:auto;}
+.tx-arrow{display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:20px;opacity:.5;}
+.tx-tag{
+  display:inline-block;margin-top:10px;font-family:'Caveat',cursive;
+  font-size:13px;padding:2px 8px;border:1px solid currentColor;
+}
+.tx-tag.burn{color:var(--accent2);}
+.tx-tag.charity{color:var(--accent3);}
+.tx-tag.flow{color:var(--accent);}
+
+/* Supply sacred number */
+.sacred-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:24px;}
+.sacred-cell{background:var(--paper3);border:1px solid var(--ink-mid);padding:32px 28px;}
+.sacred-num{font-family:'Special Elite',serif;font-size:clamp(48px,6vw,80px);line-height:1;letter-spacing:-.03em;color:var(--ink);}
+.sacred-unit{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;color:var(--accent);margin-top:4px;}
+.sacred-lore{font-size:10px;color:var(--ink3);line-height:1.9;margin-top:20px;border-left:2px solid var(--accent);padding-left:12px;letter-spacing:.03em;}
+.sacred-freq{
+  display:flex;flex-direction:column;gap:16px;padding:32px 28px;
+  background:var(--paper3);border:1px solid var(--ink-mid);border-left:none;
+  justify-content:center;
+}
+.freq-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule);}
+.freq-row:last-child{border-bottom:none;}
+.freq-key{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);}
+.freq-val{font-family:'Special Elite',serif;font-size:16px;}
+
+/* SUPPLY GRID */
+.supply-grid{display:grid;grid-template-columns:1fr 2fr;gap:2px;}
+.supply-big-cell{background:var(--paper2);border:1px solid var(--ink-mid);padding:48px 40px;position:relative;}
+.supply-big-cell::before{content:'specimen α';position:absolute;top:12px;right:14px;font-family:'Caveat',cursive;font-size:11px;color:var(--ink3);letter-spacing:.05em;}
+.supply-main-num{font-family:'Special Elite',serif;font-size:clamp(60px,8vw,96px);line-height:1;color:var(--ink);letter-spacing:-.03em;}
+.supply-unit{font-family:'Playfair Display',serif;font-style:italic;font-size:24px;color:var(--accent);margin-top:4px;}
+.supply-lore{font-size:10px;color:var(--ink3);line-height:1.8;margin-top:20px;border-left:2px solid var(--accent);padding-left:12px;letter-spacing:.03em;}
+.supply-prop-table{background:var(--paper2);border:1px solid var(--ink-mid);overflow:hidden;}
+.prop-row{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;border-bottom:1px solid var(--rule);transition:background .15s;}
+.prop-row:last-child{border-bottom:none;}
+.prop-row:hover{background:var(--glow-tint);}
+.prop-key{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);}
+.prop-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);font-weight:400;}
+.prop-val.green{color:var(--accent);}
+.prop-val.amber{color:var(--accent2);}
+.prop-val.red{color:#e03030;}
+[data-theme="dark"] .prop-val.red{color:#ff5555;}
+
+/* ALLOCATION */
+.alloc-outer{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.alloc-diagram-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
+.alloc-list-wrap{display:flex;flex-direction:column;gap:0;}
+.alloc-row{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--rule);cursor:none;transition:background .15s;padding-left:4px;}
+.alloc-row:hover{background:var(--glow-tint);}
+.alloc-color-swatch{width:4px;flex-shrink:0;align-self:stretch;border-radius:1px;}
+.alloc-icon-wrap{flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
+.alloc-pct-big{font-family:'Special Elite',serif;font-size:20px;line-height:1;min-width:42px;}
+.alloc-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ink);}
+.alloc-desc{font-size:9px;color:var(--ink3);margin-top:1px;letter-spacing:.03em;}
+.alloc-amt-badge{margin-left:auto;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--ink3);white-space:nowrap;}
+
+/* FORMULA */
+.formula-board{background:var(--paper2);border:2px solid var(--ink);padding:40px;position:relative;font-family:'DM Mono',monospace;}
+.formula-board::before{content:'CLASSIFIED · BITE SCORE PROTOCOL v1.0';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--paper2);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.18em;color:var(--accent2);padding:0 12px;white-space:nowrap;}
+.formula-eq-line{font-size:clamp(10px,1.4vw,13px);line-height:2.2;border-bottom:1px solid var(--rule);padding-bottom:20px;margin-bottom:20px;}
+.feq-label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;}
+.c-green{color:var(--accent);}
+.c-amber{color:var(--accent2);}
+.c-blue{color:var(--accent3);}
+.c-purple{color:var(--accent4);}
+.c-dim{color:var(--ink3);}
+.formula-components{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:24px;}
+.fcomp{padding:16px 20px;border:1px solid var(--rule);position:relative;transition:border-color .2s;}
+.fcomp:hover{border-color:var(--ink-mid);}
+.fcomp-weight{font-family:'Special Elite',serif;font-size:32px;line-height:1;}
+.fcomp-name{font-weight:400;font-size:11px;color:var(--ink);margin:4px 0 2px;letter-spacing:.06em;}
+.fcomp-desc{font-size:9px;color:var(--ink3);line-height:1.7;letter-spacing:.03em;}
+
+/* MULTIPLIERS */
+.mult-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px;}
+.mult-tag{border:1px solid var(--rule);padding:16px 18px;display:flex;gap:14px;transition:border-color .2s,background .2s;position:relative;}
+.mult-tag:hover{border-color:var(--accent);background:var(--glow-tint);}
+.mult-tag::after{content:'';position:absolute;top:0;right:0;border-left:12px solid transparent;border-top:12px solid var(--rule);}
+.mult-tag:hover::after{border-top-color:var(--accent);}
+.mult-icon{flex-shrink:0;padding-top:2px;}
+.mult-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ink);margin-bottom:3px;}
+.mult-cond{font-size:9px;color:var(--ink3);margin-bottom:5px;letter-spacing:.03em;}
+.mult-effect{font-family:'Special Elite',serif;font-size:14px;color:var(--accent2);}
+
+/* CALCULATOR */
+.calc-panel{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.calc-inputs{background:var(--paper2);border:1px solid var(--ink-mid);padding:32px;position:relative;}
+.calc-inputs::before{content:'INSTRUMENT PANEL — CLASS B';position:absolute;top:14px;right:14px;font-family:'Caveat',cursive;font-size:11px;color:var(--ink3);letter-spacing:.04em;}
+.calc-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.cf label{display:block;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px;}
+.cf input[type=number]{width:100%;background:var(--paper3);border:1px solid var(--ink-mid);border-top-color:var(--ink3);padding:9px 11px;font-family:'DM Mono',monospace;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;-moz-appearance:textfield;}
+.cf input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.cf input:focus{border-color:var(--accent);}
+.calc-checks{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.cc{display:flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--ink3);cursor:none;padding:7px 10px;border:1px solid transparent;transition:all .15s;}
+.cc:hover{border-color:var(--rule);color:var(--ink);}
+.cc input[type=checkbox]{accent-color:var(--accent);cursor:none;}
+.calc-run{width:100%;background:var(--ink);color:var(--paper);border:none;padding:13px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:none;transition:all .15s;}
+.calc-run:hover{background:var(--accent);color:var(--paper);}
+[data-theme="dark"] .calc-run{background:var(--ink);color:var(--paper2);}
+.calc-readout{background:var(--paper3);border:1px solid var(--ink-mid);border-left:none;padding:32px;display:flex;flex-direction:column;justify-content:center;position:relative;}
+.calc-readout::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 19px,var(--rule) 19px,var(--rule) 20px);pointer-events:none;z-index:0;}
+.calc-readout > *{position:relative;z-index:1;}
+.readout-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.readout-score{font-family:'Special Elite',serif;font-size:clamp(36px,5vw,56px);color:var(--ink);line-height:1;letter-spacing:-.02em;}
+.readout-bite{font-family:'Special Elite',serif;font-size:22px;color:var(--accent);margin-top:14px;}
+.readout-usd{display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule);}
+.rusd-val{font-family:'Special Elite',serif;font-size:18px;color:var(--accent2);}
+.rusd-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--ink3);margin-top:1px;}
+.readout-note{font-size:9px;color:var(--ink3);line-height:1.7;margin-top:14px;letter-spacing:.03em;border-top:1px solid var(--rule);padding-top:12px;}
+
+/* TIMELINE */
+.timeline-pins{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.pin-card{border:1px solid var(--rule);padding:18px 14px;position:relative;background:var(--paper2);transition:border-color .2s,transform .2s;}
+.pin-card:hover{border-color:var(--ink-mid);transform:translateY(-2px);}
+.pin-card::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:var(--pin-color,var(--ink3));border:2px solid var(--paper2);box-shadow:0 2px 4px var(--shadow);}
+.pin-card.live{--pin-color:#00cc55;border-color:rgba(0,200,80,.3);}
+.pin-card.snap{--pin-color:#cc2200;border-color:rgba(200,50,0,.3);}
+.pin-card.tge{--pin-color:#cc9900;border-color:rgba(200,150,0,.3);}
+.pin-card.warn{--pin-color:#cc6600;border-color:rgba(200,100,0,.3);}
+[data-theme="dark"] .pin-card.live{border-color:rgba(74,255,153,.25);}
+[data-theme="dark"] .pin-card.snap{border-color:rgba(255,80,60,.3);}
+[data-theme="dark"] .pin-card.tge{border-color:rgba(255,214,0,.3);}
+.pin-type{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;}
+.pin-date{font-family:'Special Elite',serif;font-size:12px;color:var(--ink);margin-bottom:6px;}
+.pin-desc{font-size:9px;color:var(--ink3);line-height:1.5;}
+.pin-badge{display:inline-block;margin-top:8px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;}
+
+/* BURN TABLE */
+.burn-table{width:100%;border-collapse:collapse;}
+.burn-table thead th{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);padding:10px 16px;border-bottom:2px solid var(--ink);text-align:left;}
+.burn-table tbody tr{border-bottom:1px solid var(--rule);transition:background .15s;}
+.burn-table tbody tr:hover{background:var(--glow-tint);}
+.burn-table td{padding:14px 16px;font-size:10px;vertical-align:middle;}
+.burn-trigger{display:flex;align-items:center;gap:10px;}
+.burn-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--ink);}
+.burn-cond{font-size:9px;color:var(--ink3);}
+.burn-amt{font-family:'Special Elite',serif;font-size:14px;color:var(--accent2);text-align:right;}
+
+/* PHASE ROADMAP */
+.phase-entries{display:flex;flex-direction:column;gap:0;margin-top:40px;}
+.phase-entry{display:grid;grid-template-columns:100px 32px 1fr;gap:0;padding:28px 0;border-bottom:1px dashed var(--rule);position:relative;}
+.phase-entry:last-child{border-bottom:none;}
+.phase-col-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);line-height:1.7;padding-top:3px;padding-right:12px;}
+.phase-col-line{display:flex;flex-direction:column;align-items:center;}
+.phase-dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);flex-shrink:0;}
+.phase-dot.active{background:var(--accent);border-color:var(--accent);}
+.phase-dot.future{background:var(--paper);border-color:var(--ink3);}
+.phase-line-seg{flex:1;width:1px;background:var(--rule);margin:4px auto;}
+.phase-content{padding-left:20px;}
+.phase-title{font-family:'Special Elite',serif;font-size:18px;color:var(--ink);margin-bottom:6px;}
+.phase-body{font-size:10px;color:var(--ink3);line-height:1.8;letter-spacing:.03em;}
+
+/* FOOTER */
+footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:2;background:var(--paper2);}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;}
+.footer-mark{font-family:'Special Elite',serif;font-size:72px;line-height:1;color:var(--ink-faint);letter-spacing:-.02em;user-select:none;}
+[data-theme="dark"] .footer-mark{color:rgba(232,224,208,0.06);}
+.footer-disc{font-size:9px;color:var(--ink3);line-height:1.8;max-width:400px;letter-spacing:.04em;margin-top:12px;}
+.footer-links{display:flex;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.flink{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);text-decoration:none;transition:color .2s;}
+.flink:hover{color:var(--accent);}
+.footer-right{text-align:right;}
+.footer-stamp{font-family:'Caveat',cursive;font-size:28px;color:var(--accent2);line-height:1.2;opacity:.6;transform:rotate(-4deg);display:inline-block;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+.reveal.in{opacity:1;transform:translateY(0);}
+.reveal-l{opacity:0;transform:translateX(-20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+.reveal-l.in{opacity:1;transform:translateX(0);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .supply-grid,.alloc-outer,.calc-panel,.sacred-row,.tx-river,.formula-components,.footer-grid{grid-template-columns:1fr;}
+  .timeline-pins{grid-template-columns:repeat(3,1fr);}
+  .calc-panel{grid-template-columns:1fr;}
+  .calc-readout{border-left:1px solid var(--ink-mid);}
+}
+@media(max-width:600px){
+  .wrap{padding:0 20px;}
+  .hero-left{padding:40px 20px;}
+  .timeline-pins{grid-template-columns:1fr 1fr;}
+  .mult-grid{grid-template-columns:1fr;}
+  .calc-fields{grid-template-columns:1fr;}
+}
+</style>
+
+<!-- Microsoft Clarity Tracking Code -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "x0hrgd8bkg");
+</script>
+</head>
+<body>
+
+<div id="cursor-h"></div>
+<div id="cursor-v"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode">
+  <svg class="toggle-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+    <circle cx="8" cy="8" r="3.5"/>
+    <line x1="8" y1="1" x2="8" y2="2.5"/><line x1="8" y1="13.5" x2="8" y2="15"/>
+    <line x1="1" y1="8" x2="2.5" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/>
+    <line x1="3.05" y1="3.05" x2="4.1" y2="4.1"/><line x1="11.9" y1="11.9" x2="12.95" y2="12.95"/>
+    <line x1="12.95" y1="3.05" x2="11.9" y2="4.1"/><line x1="4.1" y1="11.9" x2="3.05" y2="12.95"/>
+  </svg>
+  <span id="toggle-text">Day Mode</span>
+</button>
+
+<nav>
+  <div class="nav-logo">
+    <span>$BITE</span>
+    <div class="nav-logo-sub">Mosquito Token</div>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-links">
+    <a class="nl" href="#tokenomics">Tokenomics</a>
+    <a class="nl" href="#allocation">Allocation</a>
+    <a class="nl" href="#formula">Formula</a>
+    <a class="nl" href="#calendar">Calendar</a>
+    <a class="nl" href="#calculator">Calculator</a>
+    <a class="nl" href="#burn">Burn</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-blink"></div>
+    Season 1 · Live
+  </div>
+  <div class="ruler-marks"></div>
+</nav>
+
+<!-- ═══ HERO — GAME FOCUSED ═══ -->
+<section class="hero" style="position:relative;z-index:2;">
+  <div class="hero-left reveal-l">
+    <div class="hero-specimen-num">SPECIMEN · 001 · MULTI CHAIN · SEASON 1</div>
+    <div class="hero-eyebrow">🦟 The Hunt is Live —</div>
+    <div class="hero-title">
+      Sting<br><span class="dollar">Wars</span>
+    </div>
+    <div class="hero-subtitle">The World's First Mosquito Hunt Game on Telegram</div>
+    <div class="hero-desc">
+      Enter the swamp. Tap to hunt. Earn Nectar with every kill.<br>
+      The deadliest hunters earn <strong style="color:var(--accent);">$BITE</strong> — deployed on BNB Chain and powering the entire ecosystem.<br><br>
+      TGE: World Mosquito Day · August 20, 2026.
+    </div>
+
+    <div class="mechanic-tags">
+      <span class="m-tag hot">Tap-to-Earn</span>
+      <span class="m-tag hot">Boss Raids</span>
+      <span class="m-tag fire">Swarm PvP</span>
+      <span class="m-tag">Squad Referrals</span>
+      <span class="m-tag">Daily Missions</span>
+      <span class="m-tag fire">Airdrop · 15%</span>
+    </div>
+
+    <div class="hero-cta-row">
+      <button class="btn-hunt" onclick="alert('Launching Sting Wars — opening Telegram mini-app!')">
+        ▶ Start the Hunt
+      </button>
+      <button class="btn-outline">Read Litepaper</button>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val">36.9T</div><div class="hstat-key">Supply</div></div>
+      <div class="hstat"><div class="hstat-val">15%</div><div class="hstat-key">Airdrop</div></div>
+      <div class="hstat"><div class="hstat-val">AUG 10</div><div class="hstat-key">Snapshot</div></div>
+      <div class="hstat"><div class="hstat-val">71</div><div class="hstat-key">Days to Earn</div></div>
+    </div>
+
+    <div class="annotation" style="margin-top:16px;font-size:14px;color:var(--ink3);">
+      ✱ 0.01% burns · 1% heals · 98.99% flows — every tx
+    </div>
+  </div>
+
+  <!-- Right: animated game screen mockup -->
+  <div class="hero-right reveal">
+    <div class="tape tape-tl"></div>
+    <div class="tape tape-tr"></div>
+
+    <div class="game-screen">
+      <div class="game-screen-header">
+        <span>STING WARS · S1</span>
+        <span style="color:rgba(74,255,153,0.4);">⬤ LIVE</span>
+        <span>SEASON 1</span>
+      </div>
+      <div class="game-screen-body">
+        <div class="game-hud">
+          <div>
+            <div class="hud-stat">4,280</div>
+            <div class="hud-label">KILLS</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="hud-stat" style="font-size:14px;color:var(--accent2);">LVL 12</div>
+            <div class="health-bar"><div class="health-fill"></div></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="hud-stat">18,340</div>
+            <div class="hud-label">NECTAR</div>
+          </div>
+        </div>
+
+        <!-- SVG game arena -->
+        <svg width="100%" height="100%" viewBox="0 0 380 400" style="position:absolute;top:0;left:0;">
+          <!-- Swamp background atmosphere -->
+          <defs>
+            <radialGradient id="swampGlow" cx="50%" cy="60%" r="55%">
+              <stop offset="0%" stop-color="rgba(74,255,153,0.06)"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="380" height="400" fill="url(#swampGlow)"/>
+
+          <!-- Grid overlay -->
+          <g opacity="0.06" stroke="rgba(74,255,153,1)" stroke-width="0.5">
+            <line x1="0" y1="80" x2="380" y2="80"/>
+            <line x1="0" y1="160" x2="380" y2="160"/>
+            <line x1="0" y1="240" x2="380" y2="240"/>
+            <line x1="0" y1="320" x2="380" y2="320"/>
+            <line x1="76" y1="0" x2="76" y2="400"/>
+            <line x1="152" y1="0" x2="152" y2="400"/>
+            <line x1="228" y1="0" x2="228" y2="400"/>
+            <line x1="304" y1="0" x2="304" y2="400"/>
+          </g>
+
+          <!-- Mosquito 1 — animated path -->
+          <g filter="url(#glow)">
+            <g id="mosq1">
+              <animateTransform attributeName="transform" type="translate"
+                values="80,120; 95,100; 110,130; 90,150; 80,120"
+                dur="3.2s" repeatCount="indefinite"/>
+              <!-- body -->
+              <ellipse cx="0" cy="0" rx="5" ry="12" fill="rgba(74,255,153,0.7)" opacity="0.9"/>
+              <!-- wings -->
+              <ellipse cx="-10" cy="-4" rx="14" ry="5" fill="rgba(74,255,153,0.2)" stroke="rgba(74,255,153,0.5)" stroke-width="0.5">
+                <animateTransform attributeName="transform" type="scale" values="1,1;1.1,0.9;1,1" dur="0.15s" repeatCount="indefinite"/>
+              </ellipse>
+              <ellipse cx="10" cy="-4" rx="14" ry="5" fill="rgba(74,255,153,0.2)" stroke="rgba(74,255,153,0.5)" stroke-width="0.5">
+                <animateTransform attributeName="transform" type="scale" values="1,1;1.1,0.9;1,1" dur="0.15s" repeatCount="indefinite"/>
+              </ellipse>
+              <!-- proboscis -->
+              <line x1="0" y1="-12" x2="0" y2="-22" stroke="rgba(74,255,153,0.8)" stroke-width="1"/>
+              <!-- legs -->
+              <line x1="-5" y1="-2" x2="-14" y2="6" stroke="rgba(74,255,153,0.4)" stroke-width="0.8"/>
+              <line x1="-5" y1="2" x2="-14" y2="10" stroke="rgba(74,255,153,0.4)" stroke-width="0.8"/>
+              <line x1="5" y1="-2" x2="14" y2="6" stroke="rgba(74,255,153,0.4)" stroke-width="0.8"/>
+              <line x1="5" y1="2" x2="14" y2="10" stroke="rgba(74,255,153,0.4)" stroke-width="0.8"/>
+              <!-- eye -->
+              <circle cx="-2" cy="-10" r="2" fill="rgba(255,255,255,0.9)"/>
+              <circle cx="2" cy="-10" r="2" fill="rgba(255,255,255,0.9)"/>
+            </g>
+
+            <!-- Mosquito 2 — red danger -->
+            <g id="mosq2">
+              <animateTransform attributeName="transform" type="translate"
+                values="240,200; 260,180; 280,220; 250,240; 240,200"
+                dur="2.6s" repeatCount="indefinite"/>
+              <ellipse cx="0" cy="0" rx="4" ry="10" fill="rgba(255,122,60,0.85)"/>
+              <ellipse cx="-9" cy="-3" rx="12" ry="4" fill="rgba(255,122,60,0.2)" stroke="rgba(255,122,60,0.5)" stroke-width="0.5"/>
+              <ellipse cx="9" cy="-3" rx="12" ry="4" fill="rgba(255,122,60,0.2)" stroke="rgba(255,122,60,0.5)" stroke-width="0.5"/>
+              <line x1="0" y1="-10" x2="0" y2="-18" stroke="rgba(255,122,60,0.8)" stroke-width="1"/>
+              <circle cx="-2" cy="-8" r="1.8" fill="rgba(255,255,255,0.9)"/>
+              <circle cx="2" cy="-8" r="1.8" fill="rgba(255,255,255,0.9)"/>
+            </g>
+
+            <!-- Mosquito 3 — golden boss -->
+            <g id="mosq3">
+              <animateTransform attributeName="transform" type="translate"
+                values="180,300; 200,270; 160,260; 150,290; 180,300"
+                dur="4s" repeatCount="indefinite"/>
+              <ellipse cx="0" cy="0" rx="7" ry="16" fill="rgba(255,214,0,0.8)"/>
+              <ellipse cx="-14" cy="-5" rx="18" ry="6" fill="rgba(255,214,0,0.15)" stroke="rgba(255,214,0,0.6)" stroke-width="0.8"/>
+              <ellipse cx="14" cy="-5" rx="18" ry="6" fill="rgba(255,214,0,0.15)" stroke="rgba(255,214,0,0.6)" stroke-width="0.8"/>
+              <line x1="0" y1="-16" x2="0" y2="-28" stroke="rgba(255,214,0,0.9)" stroke-width="1.5"/>
+              <!-- Crown for boss -->
+              <path d="M-6,-18 L-4,-14 L0,-17 L4,-14 L6,-18" fill="rgba(255,214,0,0.9)" stroke="none"/>
+              <circle cx="-2" cy="-13" r="2.5" fill="rgba(255,255,255,0.95)"/>
+              <circle cx="2" cy="-13" r="2.5" fill="rgba(255,255,255,0.95)"/>
+            </g>
+          </g>
+
+          <!-- Crosshair / targeting reticle -->
+          <g id="reticle" opacity="0.8" filter="url(#glow)">
+            <animateTransform attributeName="transform" type="translate"
+              values="80,120; 240,200; 180,300; 80,120"
+              dur="5s" repeatCount="indefinite" calcMode="spline"
+              keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"/>
+            <circle cx="0" cy="0" r="22" stroke="rgba(74,255,153,0.5)" stroke-width="1" fill="none"/>
+            <circle cx="0" cy="0" r="14" stroke="rgba(74,255,153,0.8)" stroke-width="0.8" fill="none" stroke-dasharray="4,4"/>
+            <circle cx="0" cy="0" r="3" stroke="rgba(74,255,153,1)" stroke-width="1.5" fill="none"/>
+            <line x1="-28" y1="0" x2="-16" y2="0" stroke="rgba(74,255,153,0.7)" stroke-width="1"/>
+            <line x1="16" y1="0" x2="28" y2="0" stroke="rgba(74,255,153,0.7)" stroke-width="1"/>
+            <line x1="0" y1="-28" x2="0" y2="-16" stroke="rgba(74,255,153,0.7)" stroke-width="1"/>
+            <line x1="0" y1="16" x2="0" y2="28" stroke="rgba(74,255,153,0.7)" stroke-width="1"/>
+          </g>
+
+          <!-- Hit splash particles -->
+          <circle cx="80" cy="120" r="8" fill="rgba(74,255,153,0.4)" opacity="0">
+            <animate attributeName="r" values="2;28;28" dur="1.8s" repeatCount="indefinite" begin="0.5s"/>
+            <animate attributeName="opacity" values="0;0.6;0" dur="1.8s" repeatCount="indefinite" begin="0.5s"/>
+          </circle>
+          <circle cx="240" cy="200" r="8" fill="rgba(255,122,60,0.4)" opacity="0">
+            <animate attributeName="r" values="2;22;22" dur="1.5s" repeatCount="indefinite" begin="2.2s"/>
+            <animate attributeName="opacity" values="0;0.7;0" dur="1.5s" repeatCount="indefinite" begin="2.2s"/>
+          </circle>
+
+          <!-- Score popups -->
+          <text x="100" y="110" font-family="'Special Elite',serif" font-size="14" fill="rgba(74,255,153,0.9)" text-anchor="middle" opacity="0">
+            +2 pts
+            <animate attributeName="y" values="110;85" dur="1.5s" repeatCount="indefinite" begin="0.5s"/>
+            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0.5s"/>
+          </text>
+          <text x="255" y="190" font-family="'Special Elite',serif" font-size="13" fill="rgba(255,122,60,0.9)" text-anchor="middle" opacity="0">
+            +2 pts
+            <animate attributeName="y" values="190;165" dur="1.3s" repeatCount="indefinite" begin="2.3s"/>
+            <animate attributeName="opacity" values="0;1;0" dur="1.3s" repeatCount="indefinite" begin="2.3s"/>
+          </text>
+          <text x="190" y="280" font-family="'Special Elite',serif" font-size="16" fill="rgba(255,214,0,0.95)" text-anchor="middle" opacity="0">
+            BOSS! +10
+            <animate attributeName="y" values="280;248" dur="2s" repeatCount="indefinite" begin="3.5s"/>
+            <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="3.5s"/>
+          </text>
+
+          <!-- Bottom HUD bar -->
+          <rect x="0" y="368" width="380" height="32" fill="rgba(0,0,0,0.5)"/>
+          <text x="12" y="386" font-family="'DM Mono',monospace" font-size="8" fill="rgba(74,255,153,0.5)" letter-spacing="0.1em">NECTAR  ████████████░░░░  18,340</text>
+          <text x="280" y="386" font-family="'DM Mono',monospace" font-size="8" fill="rgba(74,255,153,0.5)" letter-spacing="0.1em">XP MAX</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Lab annotations around screen -->
+    <div class="annotation annotation-red" style="position:absolute;bottom:80px;right:20px;font-size:13px;transform:rotate(4deg);">tap to kill →</div>
+    <div class="annotation" style="position:absolute;top:120px;left:10px;font-size:12px;transform:rotate(-5deg);color:var(--accent);">← boss mosquito!</div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<!-- ═══ TOKENOMICS ═══ -->
+<section id="tokenomics">
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <div class="sec-num">01</div>
+      <div>
+        <div class="sec-tag">Token Overview</div>
+        <div class="sec-title">The <em>Numbers</em></div>
+        <div class="sec-note">field notes — supply architecture, June 2025</div>
+      </div>
+    </div>
+
+    <!-- Supply + Properties -->
+    <div class="supply-grid reveal">
+      <div class="supply-big-cell">
+        <div class="supply-main-num">36.9</div>
+        <div class="supply-unit">Trillion $BITE</div>
+        <div class="supply-lore">
+          36.9 — the Sacred Universe Frequency. A number rooted in harmonic resonance and natural cycles, mirroring the mosquito's role in the living ecosystem.<br><br>
+          Large enough for mass global participation across millions of hunters. Precise enough for real scarcity mechanics via continuous burn and charity flows.<br><br>
+          Every transaction compounds the mission — shrink the swarm, heal the world.
+        </div>
+        <div class="annotation annotation-red" style="margin-top:24px;font-size:16px;">* sacred frequency · approved by team</div>
+      </div>
+      <div class="supply-prop-table">
+        <div class="prop-row"><span class="prop-key">Token Name</span><span class="prop-val">Mosquito Token</span></div>
+        <div class="prop-row"><span class="prop-key">Ticker</span><span class="prop-val green">$BITE</span></div>
+        <div class="prop-row"><span class="prop-key">Network</span><span class="prop-val">TON</span></div>
+        <div class="prop-row"><span class="prop-key">Standard</span><span class="prop-val">Jetton</span></div>
+        <div class="prop-row"><span class="prop-key">Total Supply</span><span class="prop-val">36,900,000,000,000</span></div>
+        <div class="prop-row"><span class="prop-key">TGE Date</span><span class="prop-val amber">August 20, 2025</span></div>
+        <div class="prop-row"><span class="prop-key">Snapshot</span><span class="prop-val red">Aug 10 · 23:59 UTC</span></div>
+        <div class="prop-row"><span class="prop-key">Decimals</span><span class="prop-val">9</span></div>
+        <div class="prop-row"><span class="prop-key">Burn / TX</span><span class="prop-val amber">0.01% — sacred deflation</span></div>
+        <div class="prop-row"><span class="prop-key">Charity / TX</span><span class="prop-val green">1% — impact funding</span></div>
+        <div class="prop-row"><span class="prop-key">Community Flow</span><span class="prop-val green">98.99%</span></div>
+        <div class="prop-row"><span class="prop-key">Mintable</span><span class="prop-val red">No — fixed supply</span></div>
+      </div>
+    </div>
+
+    <!-- Transaction Flow Diagram -->
+    <div class="tx-flow-wrap reveal" style="margin-top:48px;">
+      <div class="tx-river">
+        <div class="tx-block">
+          <div class="tx-pct burn">0.01%</div>
+          <div class="tx-name">Vanishes</div>
+          <div class="tx-desc">Slow, sacred deflation. Every tx reduces total supply — the swarm naturally shrinks over time.</div>
+          <div class="tx-tag burn">🔥 Burn</div>
+        </div>
+        <div class="tx-arrow">+</div>
+        <div class="tx-block">
+          <div class="tx-pct charity">1%</div>
+          <div class="tx-name">Heals</div>
+          <div class="tx-desc">Impact funding routed to real-world causes — malaria prevention, clean water, earth healing.</div>
+          <div class="tx-tag charity">🌍 Charity</div>
+        </div>
+        <div class="tx-arrow">+</div>
+        <div class="tx-block">
+          <div class="tx-pct flow">98.99%</div>
+          <div class="tx-name">Flows</div>
+          <div class="tx-desc">Community empowerment and liquidity. The swarm moves freely — frictionless ecosystem circulation.</div>
+          <div class="tx-tag flow">⚡ Flow</div>
+        </div>
+      </div>
+      <div style="text-align:center;font-family:'Caveat',cursive;font-size:17px;color:var(--ink3);margin-top:8px;">
+        Every transaction = the swarm shrinks · the world heals · the community flows
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<!-- ═══ ALLOCATION ═══ -->
+<section id="allocation">
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <div class="sec-num">02</div>
+      <div>
+        <div class="sec-tag">Token Allocation</div>
+        <div class="sec-title">How It <em>Splits</em></div>
+      </div>
+    </div>
+    <div class="alloc-outer reveal">
+      <div class="alloc-diagram-wrap">
+        <svg width="320" height="320" viewBox="0 0 320 320" id="allocChart">
+          <g id="donutGroup" transform="translate(160,160)"></g>
+          <text x="160" y="154" font-family="'Special Elite',serif" font-size="24" text-anchor="middle" id="donut-center-val" fill="currentColor">36.9T</text>
+          <text x="160" y="170" font-family="'DM Mono',monospace" font-size="9" text-anchor="middle" id="donut-center-key" fill="currentColor" opacity="0.5" letter-spacing="0.12em">$BITE TOTAL</text>
+          <circle cx="160" cy="160" r="54" stroke-dasharray="3,8" stroke-width="0.5" fill="none" id="donut-ann" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="alloc-list-wrap" id="allocList"></div>
+    </div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<!-- ═══ CALENDAR ═══ -->
+<section id="calendar">
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <div class="sec-num">03</div>
+      <div>
+        <div class="sec-tag">Season 1 Calendar</div>
+        <div class="sec-title">Key <em>Dates</em></div>
+        <div class="sec-note">pin board — all dates intentional</div>
+      </div>
+    </div>
+    <div class="timeline-pins reveal">
+      <div class="pin-card live">
+        <div class="pin-type">Phase Opens</div>
+        <div class="pin-date">June 1, 2025</div>
+        <div class="pin-desc">Season 1 begins. Game goes live. Start earning Nectar.</div>
+        <div class="pin-badge" style="color:#00cc55;">▶ LIVE NOW</div>
+      </div>
+      <div class="pin-card">
+        <div class="pin-type">Early Hunter</div>
+        <div class="pin-date">July 1, 2025</div>
+        <div class="pin-desc">Join before this date for ×1.25 multiplier on full BITE Score.</div>
+        <div class="pin-badge" style="color:var(--accent3);">×1.25 BONUS</div>
+      </div>
+      <div class="pin-card">
+        <div class="pin-type">Mid-Season</div>
+        <div class="pin-date">July 20, 2025</div>
+        <div class="pin-desc">Public leaderboard. Top 100 hunters revealed.</div>
+      </div>
+      <div class="pin-card warn">
+        <div class="pin-type">Late Penalty</div>
+        <div class="pin-date">Aug 1, 2025</div>
+        <div class="pin-desc">Accounts after this date earn 0.5× BITE Score.</div>
+        <div class="pin-badge" style="color:var(--accent2);">0.5× PENALTY</div>
+      </div>
+      <div class="pin-card snap">
+        <div class="pin-type">SNAPSHOT</div>
+        <div class="pin-date">Aug 10 · 23:59 UTC</div>
+        <div class="pin-desc">All stats frozen. Anti-cheat review begins.</div>
+        <div class="pin-badge" style="color:#cc2200;">⚑ CRITICAL</div>
+      </div>
+      <div class="pin-card">
+        <div class="pin-type">Review</div>
+        <div class="pin-date">Aug 11–19</div>
+        <div class="pin-desc">Verification, airdrop calculation, claim portal prep.</div>
+      </div>
+      <div class="pin-card tge">
+        <div class="pin-type">WORLD MOSQUITO DAY</div>
+        <div class="pin-date">Aug 20, 2025</div>
+        <div class="pin-desc">$BITE TGE. DEX listing. Claim opens. Season 2 announced.</div>
+        <div class="pin-badge" style="color:#cc9900;">★ TGE DAY</div>
+      </div>
+    </div>
+    <div class="phase-entries reveal">
+      <div class="phase-entry">
+        <div class="phase-col-tag">Phase 01<br>NOW → AUG 20</div>
+        <div class="phase-col-line"><div class="phase-dot active"></div><div class="phase-line-seg"></div></div>
+        <div class="phase-content">
+          <div class="phase-title">Earn · Play · Accumulate</div>
+          <div class="phase-body">Nectar accumulates in-game. $BITE not yet live. Build your BITE Score through kills, referrals, tasks, and leveling up. Every action in this phase directly affects your airdrop allocation.</div>
+        </div>
+      </div>
+      <div class="phase-entry">
+        <div class="phase-col-tag">Phase 02<br>AUG 20+</div>
+        <div class="phase-col-line"><div class="phase-dot future"></div><div class="phase-line-seg"></div></div>
+        <div class="phase-content">
+          <div class="phase-title">Claim · Trade · Spend</div>
+          <div class="phase-body">$BITE claimable from airdrop. DEX trading live. In-game store opens. Staking available for Ecosystem pool rewards. Verified players receive allocation within 24hrs of TGE.</div>
+        </div>
+      </div>
+      <div class="phase-entry">
+        <div class="phase-col-tag">Phase 03<br>SEASON 3+</div>
+        <div class="phase-col-line"><div class="phase-dot future"></div></div>
+        <div class="phase-content">
+          <div class="phase-title">Govern · Burn · Expand</div>
+          <div class="phase-body">SwarmDAO governance. PvP wagering. SwampCoin integration. Cross-game utility within the Greenman ecosystem. Community-voted burn events each quarter.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<!-- ═══ FORMULA ═══ -->
+<section id="formula">
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <div class="sec-num">04</div>
+      <div>
+        <div class="sec-tag">Snapshot Methodology</div>
+        <div class="sec-title">The <em>Formula</em></div>
+        <div class="sec-note">public protocol — no hidden variables</div>
+      </div>
+    </div>
+    <div class="formula-board reveal">
+      <div class="feq-label">Your BITE Score =</div>
+      <div class="formula-eq-line">
+        <span class="c-green">( Nectar × 0.60 )</span>
+        <span class="c-dim"> + </span>
+        <span class="c-blue">( Kills × 2 )</span>
+        <span class="c-dim"> + </span>
+        <span class="c-amber">( ReferralScore × 0.25 )</span>
+        <span class="c-dim"> + </span>
+        <span class="c-purple">( LevelBonus × 0.15 )</span>
+      </div>
+      <div class="feq-label">Your $BITE Airdrop =</div>
+      <div style="font-size:clamp(10px,1.4vw,13px);line-height:2.4;">
+        <span class="c-dim">( </span><span class="c-amber">Your_BITE_Score</span>
+        <span class="c-dim"> ÷ </span><span class="c-amber">Total_BITE_Score</span><span class="c-dim"> )</span>
+        <span class="c-dim"> × </span>
+        <span class="c-green">5,535,000,000,000</span>
+        <span class="c-dim" style="font-size:9px;"> (15% of 36.9T)</span>
+      </div>
+      <div class="formula-components">
+        <div class="fcomp"><div class="fcomp-weight c-green">60%</div><div class="fcomp-name">Nectar</div><div class="fcomp-desc">Lifetime total — earned from gameplay, tasks, check-ins, and referrals. Spending on upgrades does NOT reduce this count.</div></div>
+        <div class="fcomp"><div class="fcomp-weight c-blue">×2</div><div class="fcomp-name">Kill Count</div><div class="fcomp-desc">All lifetime kills. Golden kills = 3 pts each. Boss kills = 10 pts each. Much harder to bot than passive tasks alone.</div></div>
+        <div class="fcomp"><div class="fcomp-weight c-amber">25%</div><div class="fcomp-name">Referral Score</div><div class="fcomp-desc">Confirmed recruits who played 3+ rounds. Active bonus if recruit is top 50% by kills. Hard cap at 50 referrals.</div></div>
+        <div class="fcomp"><div class="fcomp-weight c-purple">15%</div><div class="fcomp-name">Level Bonus</div><div class="fcomp-desc">Scales with rank tier. Mosquito Overlord (Lv40+) earns 5,000 pts per level. Double bonus at Overlord rank.</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;">
+      <div class="sec-header reveal" style="margin-bottom:28px;">
+        <div class="sec-num" style="font-size:32px;">04b</div>
+        <div><div class="sec-tag">Multipliers</div><div class="sec-title" style="font-size:clamp(24px,3vw,36px);">Stack Your <em>Edge</em></div></div>
+      </div>
+      <div class="mult-grid reveal" id="multGrid"></div>
+    </div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<!-- ═══ CALCULATOR ═══ -->
+<section id="calculator">
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <div class="sec-num">05</div>
+      <div>
+        <div class="sec-tag">BITE Score Calculator</div>
+        <div class="sec-title">Estimate <em>Your Drop</em></div>
+        <div class="sec-note">assumes 500,000 total participating players</div>
+      </div>
+    </div>
+    <div class="calc-panel reveal">
+      <div class="calc-inputs">
+        <div class="calc-fields">
+          <div class="cf"><label>Nectar Earned</label><input type="number" id="cNectar" value="2500" min="0"/></div>
+          <div class="cf"><label>Total Kills</label><input type="number" id="cKills" value="180" min="0"/></div>
+          <div class="cf"><label>Active Referrals</label><input type="number" id="cRefs" value="2" min="0" max="50"/></div>
+          <div class="cf"><label>Hunter Level</label><input type="number" id="cLevel" value="8" min="1" max="50"/></div>
+        </div>
+        <div class="calc-checks" id="calcChecks"></div>
+        <button class="calc-run" onclick="calcBite()">Run Calculation →</button>
+      </div>
+      <div class="calc-readout">
+        <div class="readout-label">BITE Score</div>
+        <div class="readout-score" id="calcScore">—</div>
+        <div class="readout-label" style="margin-top:18px;">Projected $BITE Airdrop</div>
+        <div class="readout-bite" id="calcBiteVal">—</div>
+        <div class="readout-usd" id="calcUsdRow">
+          <div class="rusd-item"><div class="rusd-val" id="cu1">—</div><div class="rusd-label">at $0.0001</div></div>
+          <div class="rusd-item"><div class="rusd-val" id="cu2">—</div><div class="rusd-label">at $0.001</div></div>
+          <div class="rusd-item"><div class="rusd-val" id="cu3">—</div><div class="rusd-label">at $0.01</div></div>
+        </div>
+        <div class="readout-note">Estimates assume 500,000 total players. Your actual share depends on total BITE Score pool at snapshot.</div>
+        <div class="annotation annotation-red" style="margin-top:12px;font-size:13px;">← not financial advice!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<!-- ═══ BURN ═══ -->
+<section id="burn">
+  <div class="wrap">
+    <div class="sec-header reveal">
+      <div class="sec-num">06</div>
+      <div>
+        <div class="sec-tag">Deflationary Mechanics</div>
+        <div class="sec-title">The <em>Burn</em></div>
+        <div class="sec-note">continuous + milestone burns · the swarm always shrinks</div>
+      </div>
+    </div>
+    <div class="reveal">
+      <table class="burn-table">
+        <thead>
+          <tr>
+            <th style="width:160px;">Trigger</th>
+            <th>Condition</th>
+            <th style="width:220px;text-align:right;">Burn Amount</th>
+          </tr>
+        </thead>
+        <tbody id="burnBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="div-torn"></div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-mark">$BITE</div>
+        <div class="footer-disc">
+          $BITE is a utility and community token with a sacred deflation mechanism: 0.01% burns forever, 1% funds real-world healing, 98.99% flows to the community. It does not represent equity, debt, or ownership in any legal entity. This document is a living litepaper — version 1.0, June 2025.
+        </div>
+        <div style="font-size:9px;color:var(--ink3);margin-top:8px;font-family:'DM Mono',monospace;letter-spacing:.08em;">
+          Greenman Ecosystem · BMU Holdings · SUMBIT · Mother Earth, Founder
+        </div>
+        <div class="footer-links">
+          <a class="flink" href="https://t.me/GreenmanEcoDAO">Telegram</a>
+          <a class="flink" href="https://x.com/SwampCoin_">Twitter / X</a>
+          <a class="flink" href="#">GitHub</a>
+          <a class="flink" href="#">▶ Play Game</a>
+        </div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-stamp">World Mosquito Day<br>August 20, 2025<br>TGE ⚑</div>
+        <div style="margin-top:20px;font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:.12em;">V1.0 · JUNE 2025 · TON NETWORK</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─── DATA DEFINITIONS FIRST (fix for allocColorsDark ReferenceError) ─── */
+const allocData=[
+  {name:'Sting Wars Airdrop',    pct:15, color:'#2a9a5c'},
+  {name:'Ecosystem & Rewards',   pct:22, color:'#4abf7a'},
+  {name:'DEX Liquidity',         pct:20, color:'#2a7abf'},
+  {name:'Dev & Team',            pct:12, color:'#8a44bf'},
+  {name:'Community Treasury',    pct:13, color:'#bf9a20'},
+  {name:'Strategic Partners',    pct:8,  color:'#bf5a20'},
+  {name:'Burn Reserve',          pct:5,  color:'#bf2040'},
+  {name:'Marketing & Growth',    pct:5,  color:'#bf50a0'},
+];
+const allocColorsDark=['#4aff99','#55ff33','#5aabff','#d060ff','#ffd600','#ff8800','#ff4466','#ff88cc'];
+
+const allocIconsSVG=[
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><rect x="3" y="7" width="16" height="9" rx="4.5"/><path d="M7 9.5v2M6 10.5h2"/><circle cx="14" cy="10" r="0.8" fill="currentColor"/><circle cx="16" cy="11.5" r="0.8" fill="currentColor"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2 11q3-5 5 0t5 0 5-5"/><path d="M2 14q2-3 4 0t4 0 4-3" opacity="0.4"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M11 3q5 6 5 10a5 5 0 0 1-10 0q0-4 5-10z"/><path d="M8.5 14q1.5-2 3.5-1" opacity="0.5"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M10.5 10.5L18 18"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M11 4q3 4 3 7t-3 7"/><path d="M4 11h14"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2 12l4-4 3 2 3-3 4 3 4-2"/><path d="M3 14l4 4 2-1 2 2 2-1 2 2 3-2"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M11 3c0 0 4 5 3 8 2-1.5 3-4 3-4s3 4 1 8c-1.5 3-4 4-6 4s-4.5-1-6-4c-2-4 1-8 1-8s1 2.5 3 4c-1-3 2-8 2-8z"/></svg>`,
+  `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M5 9h4l7-4v12l-7-4H5V9z"/><path d="M9 14v4H6v-4"/></svg>`,
+];
+
+const multData=[
+  {label:'Early Hunter',     cond:'Joined before July 1, 2025',        effect:'×1.25 on total BITE Score',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M10 2l2 5 5 .5-3.5 3.5 1 5L10 13.5 5.5 16l1-5L3 7.5 8 7z"/></svg>`},
+  {label:'Swamp OG',         cond:'Top 1,000 players at snapshot',     effect:'×1.5 additional on share',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M7 10q3-4 6 0-3 4-6 0z" fill-opacity="0.2" fill="currentColor"/></svg>`},
+  {label:'Mosquito Overlord',cond:'Reached Level 40+',                 effect:'×2.0 on Level Bonus',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M10 2l2.5 5 5 .5-3.5 3.5 1 5L10 13.5l-5 2.5 1-5L2.5 7.5l5-.5z"/></svg>`},
+  {label:'Boss Slayer',      cond:'Defeated 5+ bosses',                effect:'+50,000 flat bonus points',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M10 3q4 3 5 7-3 5-10 5C2 14 1 10 5 7q2-1 5-4z" fill-opacity="0.12" fill="currentColor"/><path d="M7.5 11l2 2 3-4"/></svg>`},
+  {label:'Squad Leader',     cond:'10+ active referrals',              effect:'+100,000 flat bonus points',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="10" cy="6" r="2.5"/><circle cx="4.5" cy="8" r="2"/><circle cx="15.5" cy="8" r="2"/><path d="M3 17q1-3 3.5-3h7q2.5 0 3.5 3"/></svg>`},
+  {label:'Daily Devotion',   cond:'14+ consecutive check-ins',         effect:'×1.15 on Nectar component',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 5v5l3.5 3.5"/></svg>`},
+  {label:'Precision Hunter', cond:'Lifetime accuracy ≥75%',            effect:'+25,000 flat bonus points',
+   icon:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><circle cx="10" cy="10" r="3" opacity="0.4"/><circle cx="10" cy="10" r="1" fill="currentColor"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="10" y1="16" x2="10" y2="18"/><line x1="2" y1="10" x2="4" y2="10"/><line x1="16" y1="10" x2="18" y2="10"/></svg>`},
+];
+
+const checkDefs=[
+  {id:'cEarly',    label:'Early Hunter (joined before July 1)'},
+  {id:'cSquad',    label:'Squad Leader (10+ referrals)'},
+  {id:'cBoss',     label:'Boss Slayer (5+ boss kills)'},
+  {id:'cAccuracy', label:'Precision Hunter (≥75% accuracy)'},
+  {id:'cDevote',   label:'Daily Devotion (14+ streak)'},
+];
+
+const burnData=[
+  {trigger:'Per Transaction',  cond:'0.01% of every $BITE transfer — continuous, sacred deflation',         amt:'0.01% per TX · forever',
+   icon:`<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M9 2c0 0 3.5 4.5 2.5 7.5 2-1.5 2.5-4 2.5-4s2.5 3.5 1 6.5C14 15.5 11.5 17 9 17S4 15.5 3 12.5c-1.5-3 1-6.5 1-6.5s1 2.5 2.5 4C5.5 6.5 9 2 9 2z"/></svg>`},
+  {trigger:'Kill Milestone',   cond:'Every 1,000,000 total kills (all players)',                             amt:'1,000,000,000 $BITE',
+   icon:`<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="9" cy="9" r="5"/><path d="M6.5 9l2 2 3-3"/></svg>`},
+  {trigger:'New Season',       cond:'Every Season launch event',                                             amt:'10,000,000,000 $BITE',
+   icon:`<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="M6 9q3-4 6 0-3 4-6 0z" fill-opacity="0.15" fill="currentColor"/></svg>`},
+  {trigger:'Growth Milestone', cond:'Every 100,000 new players',                                             amt:'5,000,000,000 $BITE',
+   icon:`<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="9" cy="6" r="2.5"/><path d="M2.5 15.5q1-3 3.5-3h6q2.5 0 3.5 3"/></svg>`},
+  {trigger:'Store Purchases',  cond:'50% of all in-game $BITE spent',                                       amt:'Variable (continuous)',
+   icon:`<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><rect x="2" y="5" width="14" height="10" rx="2"/><path d="M2 8h14"/></svg>`},
+  {trigger:'Community Vote',   cond:'Quarterly SwarmDAO governance',                                         amt:'Up to 50,000,000,000 $BITE',
+   icon:`<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="M6.5 9l2 2 3-3"/></svg>`},
+];
+
+/* ─── THEME ─── */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('toggle-text').textContent=isDark?'Night Mode':'Day Mode';
+  drawDonut();
+}
+
+/* ─── CURSOR ─── */
+let mx=0,my=0,rx=0,ry=0;
+const ch=document.getElementById('cursor-h');
+const cv=document.getElementById('cursor-v');
+const cd=document.getElementById('cursor-dot');
+const cr=document.getElementById('cursor-ring');
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  ch.style.left=mx+'px';ch.style.top=my+'px';
+  cv.style.left=mx+'px';cv.style.top=my+'px';
+  cd.style.left=mx+'px';cd.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.10;ry+=(my-ry)*.10;
+  cr.style.left=rx+'px';cr.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ─── DONUT CHART ─── */
+function drawDonut(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const colors=dark?allocColorsDark:allocData.map(a=>a.color);
+  const g=document.getElementById('donutGroup');
+  if(!g)return;
+  g.innerHTML='';
+  const R=120,r=72;
+  let angle=-Math.PI/2;
+  allocData.forEach((a,i)=>{
+    const slice=(a.pct/100)*Math.PI*2;
+    const x1=Math.cos(angle)*R,y1=Math.sin(angle)*R;
+    const x2=Math.cos(angle+slice)*R,y2=Math.sin(angle+slice)*R;
+    const xi1=Math.cos(angle)*r,yi1=Math.sin(angle)*r;
+    const xi2=Math.cos(angle+slice)*r,yi2=Math.sin(angle+slice)*r;
+    const large=slice>Math.PI?1:0;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${x1},${y1} A${R},${R} 0 ${large} 1 ${x2},${y2} L${xi2},${yi2} A${r},${r} 0 ${large} 0 ${xi1},${yi1} Z`);
+    path.setAttribute('fill',colors[i]);
+    path.setAttribute('opacity','0.85');
+    path.setAttribute('stroke',dark?'rgba(13,15,24,0.5)':'rgba(245,240,232,0.5)');
+    path.setAttribute('stroke-width','1.5');
+    path.style.cursor='none';
+    path.style.transition='opacity .2s,transform .2s';
+    path.addEventListener('mouseenter',()=>{path.setAttribute('opacity','1');path.setAttribute('transform','scale(1.03)');});
+    path.addEventListener('mouseleave',()=>{path.setAttribute('opacity','0.85');path.setAttribute('transform','scale(1)');});
+    g.appendChild(path);
+    const mid=angle+slice/2;
+    const tx1=Math.cos(mid)*(R+4),ty1=Math.sin(mid)*(R+4);
+    const tx2=Math.cos(mid)*(R+10),ty2=Math.sin(mid)*(R+10);
+    const tick=document.createElementNS('http://www.w3.org/2000/svg','line');
+    tick.setAttribute('x1',tx1);tick.setAttribute('y1',ty1);
+    tick.setAttribute('x2',tx2);tick.setAttribute('y2',ty2);
+    tick.setAttribute('stroke',colors[i]);tick.setAttribute('stroke-width','1.5');tick.setAttribute('opacity','0.6');
+    g.appendChild(tick);
+    angle+=slice;
+  });
+}
+drawDonut();
+
+/* ─── ALLOC LIST ─── */
+const allocList=document.getElementById('allocList');
+allocData.forEach((a,i)=>{
+  const pctAmt=((36900000000000*a.pct/100)/1e12).toFixed(3);
+  const el=document.createElement('div');
+  el.className='alloc-row';
+  el.innerHTML=`
+    <div class="alloc-color-swatch" style="background:${allocData[i].color};"></div>
+    <div class="alloc-icon-wrap" style="color:${allocData[i].color};">${allocIconsSVG[i]}</div>
+    <div class="alloc-pct-big" style="color:${allocData[i].color};">${a.pct}%</div>
+    <div><div class="alloc-name">${a.name}</div></div>
+    <div class="alloc-amt-badge">${pctAmt}T</div>
+  `;
+  allocList.appendChild(el);
+});
+
+/* ─── MULTIPLIERS ─── */
+const multGrid=document.getElementById('multGrid');
+multData.forEach(m=>{
+  const el=document.createElement('div');
+  el.className='mult-tag';
+  el.innerHTML=`<div class="mult-icon">${m.icon}</div><div><div class="mult-label">${m.label}</div><div class="mult-cond">${m.cond}</div><div class="mult-effect">${m.effect}</div></div>`;
+  multGrid.appendChild(el);
+});
+
+/* ─── CALCULATOR CHECKS ─── */
+const calcChecks=document.getElementById('calcChecks');
+checkDefs.forEach((c,i)=>{
+  const el=document.createElement('label');
+  el.className='cc';
+  el.innerHTML=`<input type="checkbox" id="${c.id}"/><span style="color:var(--ink3);margin-right:2px;">${multData[i]?multData[i].icon:''}</span><span>${c.label}</span>`;
+  calcChecks.appendChild(el);
+});
+
+/* ─── CALCULATOR LOGIC ─── */
+function getLvBonus(l){
+  if(l>=40)return l*5000;if(l>=30)return l*3000;
+  if(l>=20)return l*2000;if(l>=10)return l*1500;
+  if(l>=5)return l*1200;return l*1000;
+}
+function fmtK(n){
+  if(n>=1e9)return(n/1e9).toFixed(2)+'B';
+  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
+  return Math.round(n).toString();
+}
+function calcBite(){
+  const nectar=+document.getElementById('cNectar').value||0;
+  const kills=+document.getElementById('cKills').value||0;
+  const refs=Math.min(50,+document.getElementById('cRefs').value||0);
+  const level=Math.min(50,Math.max(1,+document.getElementById('cLevel').value||1));
+  const early=document.getElementById('cEarly')?.checked;
+  const squad=document.getElementById('cSquad')?.checked;
+  const boss=document.getElementById('cBoss')?.checked;
+  const accuracy=document.getElementById('cAccuracy')?.checked;
+  const devote=document.getElementById('cDevote')?.checked;
+  let nComp=nectar*.6;if(devote)nComp*=1.15;
+  const kComp=kills*2;
+  const rComp=(refs*500)*.25;
+  let lv=getLvBonus(level);if(level>=40)lv*=2;
+  const lvComp=lv*.15;
+  let score=nComp+kComp+rComp+lvComp;
+  if(early)score*=1.25;
+  if(squad)score+=100000;
+  if(boss)score+=50000;
+  if(accuracy)score+=25000;
+  const pool=500000*3550;
+  const airdrop=5535000000000; // 15% of 36.9T
+  const myBite=Math.round((score/pool)*airdrop);
+  document.getElementById('calcScore').textContent=Math.round(score).toLocaleString();
+  document.getElementById('calcBiteVal').textContent=fmtK(myBite)+' $BITE';
+  document.getElementById('cu1').textContent='$'+(myBite*.0001).toFixed(2);
+  document.getElementById('cu2').textContent='$'+(myBite*.001).toFixed(2);
+  document.getElementById('cu3').textContent='$'+(myBite*.01).toFixed(2);
+}
+['cNectar','cKills','cRefs','cLevel'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('input',calcBite);
+});
+document.addEventListener('change',e=>{
+  if(['cEarly','cSquad','cBoss','cAccuracy','cDevote'].includes(e.target.id))calcBite();
+});
+calcBite();
+
+/* ─── BURN TABLE ─── */
+const burnBody=document.getElementById('burnBody');
+burnData.forEach(b=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td class="burn-trigger"><span style="color:var(--accent2);flex-shrink:0;">${b.icon}</span><span class="burn-label">${b.trigger}</span></td>
+    <td class="burn-cond">${b.cond}</td>
+    <td class="burn-amt">${b.amt}</td>
+  `;
+  burnBody.appendChild(tr);
+});
+
+/* ─── SCROLL REVEAL ─── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');}});
+},{threshold:.1});
+document.querySelectorAll('.reveal,.reveal-l').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
