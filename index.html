@@ -145,12 +145,17 @@ section{padding:80px 0;position:relative;z-index:2;}
   transition:all .25s;position:relative;overflow:hidden;
   box-shadow:0 0 24px rgba(74,255,153,0.3);
 }
-[data-theme="light"] .btn-hunt{color:#0a1a0e;}
-.btn-hunt::before{content:'';position:absolute;inset:0;background:white;opacity:0;transition:opacity .2s;}
-.btn-hunt:hover::before{opacity:.1;}
-.btn-hunt:hover{box-shadow:0 0 40px rgba(74,255,153,0.5);transform:translateY(-1px);}
-.btn-outline{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:none;border:1px solid var(--ink-mid);padding:12px 24px;cursor:none;transition:all .2s;}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+[data-theme="light"] .btn-hunt{
+  color:#0a1a0e;
+  background:#1a9a50;
+  box-shadow:0 0 28px rgba(26,154,80,0.55), 0 0 60px rgba(26,154,80,0.25), 0 2px 8px rgba(26,74,46,0.3);
+  text-shadow:0 1px 0 rgba(255,255,255,0.15);
+}
+[data-theme="light"] .btn-hunt:hover{
+  background:#18b358;
+  box-shadow:0 0 44px rgba(26,180,80,0.7), 0 0 90px rgba(26,180,80,0.3), 0 4px 12px rgba(26,74,46,0.35);
+  transform:translateY(-1px);
+}
 
 .hero-stats{display:flex;gap:0;margin-top:36px;border-top:1px solid var(--ink-mid);border-bottom:1px solid var(--rule);padding:16px 0;}
 .hstat{flex:1;text-align:center;border-right:1px solid var(--rule);padding:4px 8px;}
@@ -440,7 +445,7 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
     </div>
 
     <div class="hero-stats">
-      <div class="hstat"><div class="hstat-val">36.9T</div><div class="hstat-key">Supply</div></div>
+      <div class="hstat"><div class="hstat-val">369T</div><div class="hstat-key">Supply</div></div>
       <div class="hstat"><div class="hstat-val">15%</div><div class="hstat-key">Airdrop</div></div>
       <div class="hstat"><div class="hstat-val">AUG 10</div><div class="hstat-key">Snapshot</div></div>
       <div class="hstat"><div class="hstat-val">71</div><div class="hstat-key">Days to Earn</div></div>
@@ -634,10 +639,10 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
     <!-- Supply + Properties -->
     <div class="supply-grid reveal">
       <div class="supply-big-cell">
-        <div class="supply-main-num">36.9</div>
+        <div class="supply-main-num">369</div>
         <div class="supply-unit">Trillion $BITE</div>
         <div class="supply-lore">
-          36.9 — the Sacred Universe Frequency. A number rooted in harmonic resonance and natural cycles, mirroring the mosquito's role in the living ecosystem.<br><br>
+          369 — the Sacred Universe Frequency. A number rooted in harmonic resonance and natural cycles, mirroring the mosquito's role in the living ecosystem.<br><br>
           Large enough for mass global participation across millions of hunters. Precise enough for real scarcity mechanics via continuous burn and charity flows.<br><br>
           Every transaction compounds the mission — shrink the swarm, heal the world.
         </div>
@@ -648,8 +653,22 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
         <div class="prop-row"><span class="prop-key">Ticker</span><span class="prop-val green">$BITE</span></div>
         <div class="prop-row"><span class="prop-key">Network</span><span class="prop-val">BNB Chain</span></div>
         <div class="prop-row"><span class="prop-key">Standard</span><span class="prop-val">BEP-20</span></div>
-        <div class="prop-row"><span class="prop-key">Total Supply</span><span class="prop-val">36,900,000,000,000</span></div>
+        <div class="prop-row"><span class="prop-key">Total Supply</span><span class="prop-val">369,000,000,000,000</span></div>
         <div class="prop-row"><span class="prop-key">TGE Date</span><span class="prop-val amber">August 20, 2026</span></div>
+        <div class="prop-row" style="background:rgba(184,74,28,0.06);border-left:2px solid var(--accent2);">
+  <span class="prop-key" style="display:flex;flex-direction:column;gap:3px;">
+    Contract
+    <span style="font-size:7px;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;">⚠ Testnet · Not Final</span>
+  </span>
+  <span class="prop-val" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+    <span style="font-size:9px;letter-spacing:.06em;color:var(--ink3);font-family:'DM Mono',monospace;">0xB63681D046e1Ab6999eAf678025B402124C27C61...</span>
+    <span style="font-size:7px;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;">Mainnet: Aug 20, 2026 · TGE</span>
+  </span>
+</div>
+<div class="prop-row" style="background:rgba(184,74,28,0.04);">
+  <span class="prop-key">Do not send funds</span>
+  <span class="prop-val red" style="font-size:9px;">Testnet only — no real value</span>
+</div>
         <div class="prop-row"><span class="prop-key">Snapshot</span><span class="prop-val red">Aug 10 · 23:59 UTC</span></div>
         <div class="prop-row"><span class="prop-key">Decimals</span><span class="prop-val">9</span></div>
         <div class="prop-row"><span class="prop-key">Burn / TX</span><span class="prop-val amber">0.01% — sacred deflation</span></div>
