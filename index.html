@@ -672,19 +672,27 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
         <div class="prop-row"><span class="prop-key">Standard</span><span class="prop-val">BEP-20</span></div>
         <div class="prop-row"><span class="prop-key">Total Supply</span><span class="prop-val">369,000,000,000,000</span></div>
         <div class="prop-row"><span class="prop-key">TGE Date</span><span class="prop-val amber">August 20, 2026</span></div>
-        <div class="prop-row" style="background:rgba(184,74,28,0.06);border-left:2px solid var(--accent2);">
-  <span class="prop-key" style="display:flex;flex-direction:column;gap:3px;">
-    Contract
-    <span style="font-size:7px;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;">⚠ Testnet · Not Final</span>
-  </span>
-  <span class="prop-val" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-    <span style="font-size:9px;letter-spacing:.06em;color:var(--ink3);font-family:'DM Mono',monospace;">0xB63681D046e1Ab6999eAf678025B402124C27C61...</span>
-    <span style="font-size:7px;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;">Mainnet: Aug 20, 2026 · TGE</span>
-  </span>
-</div>
-<div class="prop-row" style="background:rgba(184,74,28,0.04);">
-  <span class="prop-key">Do not send funds</span>
-  <span class="prop-val red" style="font-size:9px;">Testnet only — no real value</span>
+       <div class="prop-row" style="background:rgba(184,74,28,0.06);border-left:2px solid var(--accent2);flex-direction:column;align-items:flex-start;gap:8px;padding:14px 20px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+    <span class="prop-key" style="display:flex;flex-direction:column;gap:3px;">
+      Contract
+      <span style="font-size:7px;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;">⚠ Testnet · Not Final</span>
+    </span>
+    <span style="font-size:7px;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;font-family:'DM Mono',monospace;">Mainnet: Aug 20, 2026 · TGE</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;width:100%;background:var(--paper3);border:1px solid var(--rule);padding:8px 12px;">
+    <span id="contract-addr" style="font-size:9px;letter-spacing:.06em;color:var(--ink);font-family:'DM Mono',monospace;flex:1;word-break:break-all;line-height:1.6;">0xB63681D046e1Ab6999eAf678025B402124C27C61</span>
+    <button onclick="copyContract()" id="copy-btn" style="flex-shrink:0;background:none;border:1px solid var(--ink-mid);padding:6px 8px;cursor:none;transition:all .2s;display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;white-space:nowrap;" onmouseenter="this.style.borderColor='var(--accent2)';this.style.color='var(--accent2)'" onmouseleave="this.style.borderColor='var(--ink-mid)';this.style.color='var(--ink3)'">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+        <rect x="4" y="4" width="7" height="7" rx="1"/>
+        <path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1"/>
+      </svg>
+      <span id="copy-label">Copy</span>
+    </button>
+  </div>
+  <div style="font-size:8px;color:var(--accent2);font-family:'DM Mono',monospace;letter-spacing:.08em;">
+    ⚠ Do not send funds · Testnet only · No real value
+  </div>
 </div>
         <div class="prop-row"><span class="prop-key">Snapshot</span><span class="prop-val red">Aug 10 · 23:59 UTC</span></div>
         <div class="prop-row"><span class="prop-key">Decimals</span><span class="prop-val">9</span></div>
@@ -1116,6 +1124,23 @@ const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');}});
 },{threshold:.1});
 document.querySelectorAll('.reveal,.reveal-l').forEach(el=>obs.observe(el));
+
+/* ─── COPY CONTRACT ADDRESS ─── */
+function copyContract(){
+  const addr = document.getElementById('contract-addr').textContent.trim();
+  navigator.clipboard.writeText(addr).then(()=>{
+    const label = document.getElementById('copy-label');
+    const btn = document.getElementById('copy-btn');
+    label.textContent = 'Copied!';
+    btn.style.borderColor = 'var(--accent)';
+    btn.style.color = 'var(--accent)';
+    setTimeout(()=>{
+      label.textContent = 'Copy';
+      btn.style.borderColor = 'var(--ink-mid)';
+      btn.style.color = 'var(--ink3)';
+    }, 2000);
+  });
+}
 </script>
 </body>
 </html>
