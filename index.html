@@ -157,6 +157,23 @@ section{padding:80px 0;position:relative;z-index:2;}
   transform:translateY(-1px);
 }
 
+.btn-outline{
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink);
+  background:none;
+  border:1px solid var(--ink-mid);
+  padding:12px 24px;
+  cursor:none;
+  transition:all .2s;
+}
+.btn-outline:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
 .hero-stats{display:flex;gap:0;margin-top:36px;border-top:1px solid var(--ink-mid);border-bottom:1px solid var(--rule);padding:16px 0;}
 .hstat{flex:1;text-align:center;border-right:1px solid var(--rule);padding:4px 8px;}
 .hstat:last-child{border-right:none;}
