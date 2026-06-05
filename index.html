@@ -494,19 +494,19 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
 <!-- HERO -->
 <section class="hero" style="position:relative;z-index:2;">
   <div class="hero-left reveal-l">
-    <div class="hero-specimen-num">SPECIMEN · 001 · MULTI CHAIN · SEASON 1</div>
+    <div class="hero-specimen-num">SPECIMEN · 001 · WEB3 GAMING · SEASON 1</div>
     <div class="hero-eyebrow">🦟 The Hunt is Live —</div>
     <div class="hero-title">Sting<br><span class="dollar">Wars</span></div>
-    <div class="hero-subtitle">The World's First Mosquito Hunt Game on Telegram</div>
+    <div class="hero-subtitle">The Battle of the Swarm Has Begun</div>
     <div class="hero-desc">
-      Enter the swamp. Tap to hunt. Earn Nectar with every kill.<br>
-      The deadliest hunters earn <strong style="color:var(--accent);">$BITE</strong> — deployed on BNB Chain and powering the entire ecosystem.<br><br>
-      TGE: World Mosquito Day · August 20, 2026.
+      Join the Global Swarm!<br>
+      Billions of mosquitoes. Millions of hunters. One mission. <br>
+      Hunt. Earn Nectar as you play and qualify for <strong style="color:var(--accent);">$BITE</strong><br><br>
+      This document is a living litepaper - v1.0, 2026
     </div>
     <div class="mechanic-tags">
       <span class="m-tag hot">Tap-to-Earn</span>
       <span class="m-tag hot">Boss Raids</span>
-      <span class="m-tag fire">Swarm PvP</span>
       <span class="m-tag">Squad Referrals</span>
       <span class="m-tag">Daily Missions</span>
       <span class="m-tag fire">Airdrop · 15%</span>
@@ -518,13 +518,37 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
         This prevents eval-based XSS injection through event attributes.
       -->
       <button class="btn-hunt" data-action="openGame" type="button">▶ Start the Hunt</button>
-      <button class="btn-outline" data-action="joinEco" type="button">Join Greenman Ecosystem</button>
+      <button class="btn-outline" data-action="joinEco" type="button">Join the Community
+
+      </button>
     </div>
     <div class="hero-stats">
       <div class="hstat"><div class="hstat-val">369T</div><div class="hstat-key">Supply</div></div>
       <div class="hstat"><div class="hstat-val">15%</div><div class="hstat-key">Airdrop</div></div>
       <div class="hstat"><div class="hstat-val">AUG 10</div><div class="hstat-key">Snapshot</div></div>
-      <div class="hstat"><div class="hstat-val">71</div><div class="hstat-key">Days to Earn</div></div>
+      <div class="hstat" style="flex:2;border-right:1px solid var(--rule);">
+  <div style="display:flex;gap:8px;justify-content:center;align-items:baseline;">
+    <div style="text-align:center;">
+      <div class="hstat-val" id="cd-days" style="font-size:22px;">--</div>
+      <div class="hstat-key">Days</div>
+    </div>
+    <div class="hstat-val" style="font-size:18px;color:var(--ink3);">:</div>
+    <div style="text-align:center;">
+      <div class="hstat-val" id="cd-hours" style="font-size:22px;">--</div>
+      <div class="hstat-key">Hrs</div>
+    </div>
+    <div class="hstat-val" style="font-size:18px;color:var(--ink3);">:</div>
+    <div style="text-align:center;">
+      <div class="hstat-val" id="cd-mins" style="font-size:22px;">--</div>
+      <div class="hstat-key">Mins</div>
+    </div>
+    <div class="hstat-val" style="font-size:18px;color:var(--ink3);">:</div>
+    <div style="text-align:center;">
+      <div class="hstat-val" id="cd-secs" style="font-size:22px;color:var(--accent2);">--</div>
+      <div class="hstat-key">Secs</div>
+    </div>
+  </div>
+</div>
     </div>
     <div class="annotation" style="margin-top:16px;font-size:14px;color:var(--ink3);">✱ 0.01% burns · 1% heals · 98.99% flows — every tx</div>
   </div>
@@ -864,6 +888,41 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
 
 'use strict';
 
+/* ── LIVE COUNTDOWN TO SNAPSHOT ──
+   To change the date, edit only the line below.
+   Month is 0-indexed: Jan=0 ... Aug=7 ... Dec=11
+*/
+const SNAPSHOT_DATE = new Date(Date.UTC(2026, 7, 10, 23, 59, 0));
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = SNAPSHOT_DATE - now;
+
+  const dEl = document.getElementById('cd-days');
+  const hEl = document.getElementById('cd-hours');
+  const mEl = document.getElementById('cd-mins');
+  const sEl = document.getElementById('cd-secs');
+  if (!dEl) return;
+
+  if (diff <= 0) {
+    dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = '00';
+    return;
+  }
+
+  const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+  dEl.textContent = String(days).padStart(2, '0');
+  hEl.textContent = String(hours).padStart(2, '0');
+  mEl.textContent = String(mins).padStart(2, '0');
+  sEl.textContent = String(secs).padStart(2, '0');
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000); // ticks every second
+
 /* ── [E] Iframe breakout — if we're in a frame, escape ── */
 (function iframeBreak() {
   if (window.self !== window.top) {
@@ -1151,15 +1210,12 @@ document.addEventListener('click', function(e) {
 
 /* ── THEME TOGGLE ── */
 function toggleTheme() {
-  if (!RateLimiter.check('theme', 4, 2000)) return;
-
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
   html.setAttribute('data-theme', isDark ? 'light' : 'dark');
   document.getElementById('toggle-text').textContent = isDark ? 'Night Mode' : 'Day Mode';
   drawDonut();
 }
-document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
 /* ── CURSOR ── */
 let mx=0, my=0, rx=0, ry=0;
