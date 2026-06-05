@@ -417,6 +417,28 @@ footer{border-top:2px solid var(--ink);padding:48px 0;position:relative;z-index:
   .hero-left{padding:40px 20px;}
   .timeline-pins{grid-template-columns:1fr 1fr;}
   .mult-grid{grid-template-columns:1fr;}
+
+  /* Hero stats countdown fix */
+  .hero-stats{flex-wrap:wrap;gap:8px;}
+  .hstat{min-width:calc(50% - 4px);border-right:none!important;border-bottom:1px solid var(--rule);}
+  .hstat:last-child{border-bottom:none;}
+
+  /* Countdown units shrink on small screens */
+  #cd-days,#cd-hours,#cd-mins,#cd-secs{font-size:16px!important;}
+  .hero-stats [style*="flex:2"]{flex:1 1 100%!important;border-right:none!important;}
+
+  /* Hero title scale down */
+  .hero-title{font-size:clamp(40px,12vw,70px);}
+  .hero-subtitle{font-size:14px;}
+  .hero-desc{font-size:10px;}
+
+  /* CTA buttons stack */
+  .hero-cta-row{flex-direction:column;align-items:flex-start;}
+  .btn-hunt,.btn-outline{width:100%;text-align:center;}
+
+  /* Mechanic tags smaller */
+  .mechanic-tags{gap:4px;}
+  .m-tag{font-size:7px;padding:3px 8px;}
 }
 </style>
 
